@@ -15,6 +15,17 @@ const COLORS = [
   '#ffb74d', // L - orange
 ];
 
+const COLORS_LIGHT = [
+  null,
+  '#00bcd4', // I - cyan vivid
+  '#ffc107', // O - amber vivid
+  '#9c27b0', // T - deep purple vivid
+  '#4caf50', // S - green vivid
+  '#f44336', // Z - red vivid
+  '#2196f3', // J - blue vivid
+  '#ff9800', // L - orange vivid
+];
+
 const PIECES = [
   null,
   [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], // I
@@ -40,7 +51,7 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 
-let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId, lightMode;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -158,7 +169,7 @@ function updateHUD() {
 
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = COLORS[colorIndex];
+  const color = (lightMode ? COLORS_LIGHT : COLORS)[colorIndex];
   context.globalAlpha = alpha ?? 1;
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
@@ -169,7 +180,7 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = lightMode ? '#c8c8d8' : '#22222e';
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -263,6 +274,7 @@ function init() {
   level = 1;
   paused = false;
   gameOver = false;
+  lightMode = document.body.classList.contains('light-mode');
   dropInterval = 1000;
   dropAccum = 0;
   lastTime = performance.now();
@@ -301,4 +313,12 @@ document.addEventListener('keydown', e => {
 
 restartBtn.addEventListener('click', init);
 
+const themeToggle = document.getElementById('theme-toggle');
+themeToggle.addEventListener('click', () => {
+  lightMode = !lightMode;
+  document.body.classList.toggle('light-mode', lightMode);
+  themeToggle.textContent = lightMode ? '☾ DARK MODE' : '☀ LIGHT MODE';
+});
+
+lightMode = false;
 init();
